@@ -1,0 +1,5 @@
+finding_id,vulnerability_type,owasp_category,mitre_technique,endpoint,payload,evidence,impact,remediation,severity
+JUICE-001,SQL Injection,A03:2021-Injection,T1190,/rest/user/login,"' OR '1'='1' --","Screenshot: admin login without password","Authentication bypass → account takeover","Parameterized queries; input validation",High
+JUICE-002,SQL Injection,A03:2021-Injection,T1190,/rest/products/search,"' UNION SELECT id,email,password,'1','2','3','4','5','6','7' FROM Users--","Screenshot: user credentials in search results","Data exfiltration → credential theft","Parameterized queries; least privilege DB user",Critical
+JUICE-003,Cross-Site Scripting (Reflected),A03:2021-Injection,T1059.007,/search?q=,<script>alert('Reflected XSS')</script>,"Screenshot: alert on search page","Session hijacking, defacement","Output encoding; CSP; input validation",Medium
+JUICE-004,Cross-Site Scripting (Stored),A03:2021-Injection,T1059.007,/api/Reviews/,<img src=x onerror=alert('Stored XSS')>,"Screenshot: alert on product page","Persistent attack on all visitors","Output encoding; CSP; sanitize stored input",High

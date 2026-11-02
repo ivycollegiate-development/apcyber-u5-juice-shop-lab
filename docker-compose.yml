@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  juice-shop:
+    image: bkimminich/juice-shop:latest
+    container_name: juice-shop
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=unsafe
+      - DEBUG=express:*
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Optional: PostgreSQL for persistence (Juice Shop uses SQLite by default)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: juice_shop
+  #     POSTGRES_USER: juice
+  #     POSTGRES_PASSWORD: shop
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+
+# volumes:
+#   pgdata:

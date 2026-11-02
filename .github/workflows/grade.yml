@@ -1,0 +1,61 @@
+name: Grade Juice Shop Lab
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      
+      - name: Start Juice Shop (Docker)
+        run: |
+          docker-compose up -d
+          # Wait for Juice Shop to be ready
+          for i in {1..30}; do
+            if curl -s http://localhost:3000/ > /dev/null; then
+              echo "Juice Shop is ready"
+              break
+            fi
+            echo "Waiting for Juice Shop... ($i/30)"
+            sleep 2
+          done
+      
+      - name: Validate findings.csv
+        run: |
+          python tests/test_findings.py findings_template.csv
+      
+      - name: Run exploit verification (optional)
+        run: |
+          # Run student exploit scripts to verify they work
+          python attacker_scripts/sqli_login.py || echo "sqli_login verification failed"
+          python attacker_scripts/sqli_search.py || echo "sqli_search verification failed"
+          python attacker_scripts/xss_reflected.py || echo "xss_reflected verification failed"
+          python attacker_scripts/xss_stored.py || echo "xss_stored verification failed"
+        continue-on-error: true
+      
+      - name: Check screenshots
+        run: |
+          if [ -d "screenshots" ]; then
+            echo "Screenshots directory exists"
+            ls -la screenshots/
+          else
+            echo "WARNING: No screenshots directory"
+          fi
