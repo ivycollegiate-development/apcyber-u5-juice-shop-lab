@@ -27,7 +27,7 @@ jobs:
       
       - name: Start Juice Shop (Docker)
         run: |
-          docker-compose up -d
+          docker run -d --name juice-shop -p 3000:3000 bkimminich/juice-shop:latest
           # Wait for Juice Shop to be ready
           for i in {1..30}; do
             if curl -s http://localhost:3000/ > /dev/null; then
